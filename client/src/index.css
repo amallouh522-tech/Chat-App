@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap');
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  /* لضمان دقة الحواف */
+  font-family: 'Poppins', sans-serif;
+  /* خط معاصر أكثر للبيانات */
+}
+
+:root {
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --accent-color: #764ba2;
+  --bg-color: #f8f9fa;
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --text-main: #2d3436;
+}
+
+body {
+  background: var(--bg-color);
+  width: 100%;
+}
+
+.Login {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  margin: auto;
+  /* تحديد عرض مناسب للجوال والكمبيوتر */
+}
+
+.Login .head {
+  text-align: center;
+  margin: 20px;
+  margin-bottom: 20px;
+}
+
+.Login .head h2 {
+  font-size: 28px;
+  color: var(--text-main);
+  font-weight: 600;
+  font-family: sans-serif;
+}
+
+.Login .inputs {
+  background: var(--glass-bg);
+  padding: 40px 30px;
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  display: flex;
+  width: 90%;
+  margin: auto;
+  flex-direction: column;
+  gap: 15px;
+  /* مسافة متساوية بين العناصر */
+  backdrop-filter: blur(10px);
+  /* تأثير زجاجي */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.Login .inputs>h2 {
+  font-family: 'Dancing Script', cursive;
+  text-align: center;
+  margin-bottom: 10px;
+  /* حذفنا اللون الأحمر هنا ليظهر فقط عند وجود رسالة خطأ */
+}
+
+.Login .inputs .inp {
+  width: 100%;
+  /* العرض كامل داخل الـ container */
+  padding: 14px 16px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 2px solid #eee;
+  background: #fdfdfd;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.Login .inputs .inp:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.1);
+}
+
+.Login .inputs .btn {
+  width: 100%;
+  padding: 15px;
+  margin-top: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  background: var(--primary-gradient);
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.Login .inputs .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(118, 75, 162, 0.3);
+}
+
+.Login .inputs .btn:active {
+  transform: translateY(0);
+}
+
+.Login .inputs p {
+  text-align: center;
+  font-size: 14px;
+  color: #636e72;
+  margin-top: 15px;
+}
+
+.Login .inputs p a {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.Login .inputs p a:hover {
+  text-decoration: underline;
+}
