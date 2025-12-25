@@ -1,7 +1,22 @@
 import React from 'react'
+import NavBar from '../Components/NavBar'
+import ChatSide from '../Components/ChatSide'
+import OpenedChats from '../Components/OpenedChats'
 
 export default function Chat() {
   return (
-    <div>Chat</div>
+    <div className='chat'>
+      <NavBar
+        PageName={"Chat"}
+        url1={["/home", "Home"]}
+        url2={["/addpost", "Add new post"]}
+        url3={["/logout", "Logout"]}
+      />
+      <div className="content">
+        <OpenedChats />
+        <ChatSide />
+      </div>
+    </div>
   )
 }
+
