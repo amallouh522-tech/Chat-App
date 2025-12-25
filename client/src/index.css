@@ -264,7 +264,6 @@ html {
 
 .post:hover {
   transform: translateY(-4px);
-  ;
 }
 
 .Addpost .inputs , .AddChat .inputs {
@@ -281,5 +280,9 @@ html {
   margin: 5px auto;
   padding: 10px;
   border-radius: 10px;
+}
+
+.NFP{
+  text-align: center;
 }
 
