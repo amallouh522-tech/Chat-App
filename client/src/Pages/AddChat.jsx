@@ -1,14 +1,30 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import NavBar from '../Components/NavBar'
+import { useNavigate } from 'react-router-dom';
+import { MustLogin } from '../JS/mustLogin';
 
 export default function AddChat() {
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        async function Check() {
+            const result = await MustLogin();
+            if (!result) {
+                navigate("/");
+            };
+        };
+        Check();
+    }, []);
+
+
     return (
         <div className='AddChat'>
             <NavBar
                 PageName={"Home"}
                 url1={["/addpost", "Add new Post"]}
                 url2={["/chat", "Chat"]}
-                url3={["/home" , "Home"]}
+                url3={["/home", "Home"]}
                 url4={["/logout", "Logout"]}
             />
             <div className="inputs">

@@ -1,6 +1,43 @@
-import React from 'react'
-import { Link } from "react-router-dom";
+import React, { useEffect, useRef, useState } from 'react'
+import { useNavigate , Link } from "react-router-dom";
+import { LoginFetch } from '../JS/LoginFetch';
+import { MustLogin } from '../JS/mustLogin';
+import { handleEnterKey } from '../JS/Onkeydown';
+
 export default function Login() {
+
+    const usernameRef = useRef();
+    const passwordRef = useRef();
+
+    const [msg , setmsg] = useState();
+
+    const navigate = useNavigate();
+
+
+    useEffect(() => {
+        async function Check() {
+              const result = await MustLogin();
+              if (result) {
+                navigate("/home");
+              };
+            };
+            Check();
+    }  , [])
+
+
+    async function LoginResult() {
+
+        const username = usernameRef.current.value;
+        const password = passwordRef.current.value;
+
+        const Lresult = await LoginFetch(username, password);
+        if (Lresult.succ) {
+            navigate("/home");
+        } else {
+            setmsg(Lresult.msg);
+        };
+    }
+
     return (
         <div className='Login'>
             <div className="head">
@@ -8,11 +45,15 @@ export default function Login() {
                 </div>
             <div className="inputs">
                 
-                <h2><br /></h2>
-                <input placeholder='Enter username' type="text" key={1} className="inp" />
-                <input placeholder='Enter password' type="password" key={2} className="inp" />
-                <button className='btn'> Login </button>
-                <p> Have not accout yet <Link to={"/signup"}>Sign Up</Link></p>
+                <h2 style={{color:"red"}}>{msg}<br /></h2>
+                <input onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                        passwordRef.current.focuse;
+                    }
+                }} ref={usernameRef} placeholder='Enter username' type="text" key={1} className="inp" />
+                <input onKeyUp={(e) => handleEnterKey(e, LoginResult)} ref={passwordRef} placeholder='Enter password' type="password" key={2} className="inp" />
+                <button className='btn' onClick={LoginResult}> Login </button>
+                <p> Don't have an account yet? <Link to={"/signup"}>Sign Up</Link></p>
             </div>
         </div>
     )

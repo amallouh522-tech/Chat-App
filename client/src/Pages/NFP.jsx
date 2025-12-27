@@ -6,10 +6,10 @@ export default function NFP() {
     <div className='NFP'>
       <NavBar
         PageName={"NFP"}
-        url1={["/" , "Login"]}
-        url2={["/signup" , "Sign UP"]}
-        url3={[]}
-        url4={[]}
+        url1={["/addchat" , "Add new Chat"]}
+        url2={["/chat" , "chat"]}
+        url3={["/home" , "Home"]}
+        url4={["/addpost", "add new post"]}
       />
         <h2>Error num : 404</h2>
         <h3>This page wasnt Fount</h3>

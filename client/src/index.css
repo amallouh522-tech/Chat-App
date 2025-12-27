@@ -87,8 +87,7 @@ html {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 400px;
-  /* ثابت لضمان عدم التمدد الزائد */
+  max-width: 500px;
   margin: 50px auto;
 }
 
@@ -97,6 +96,7 @@ html {
   margin-bottom: 25px;
   color: var(--text-main);
   font-weight: 600;
+  font-family: 'Dancing Script', cursive;
 }
 
 .Login .inputs {
@@ -110,7 +110,6 @@ html {
 }
 
 .Login .inputs>h2 {
-  font-family: 'Dancing Script', cursive;
   text-align: center;
   color: var(--accent-color);
   font-size: 30px;
@@ -168,6 +167,21 @@ html {
   border-right: 1px solid #eee;
   overflow-y: auto;
 }
+
+.openedchats .head a {
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 10px;
+  transition: 0.3s ease;
+}
+
+.openedchats .head a:hover {
+  background: rgba(118, 75, 162, 0.1);
+  color: var(--accent-color) !important;
+}
+
 
 .Content-id {
   display: flex;
@@ -266,7 +280,8 @@ html {
   transform: translateY(-4px);
 }
 
-.Addpost .inputs , .AddChat .inputs {
+.Addpost .inputs,
+.AddChat .inputs {
   background: var(--white);
   width: 50%;
   margin: 20px auto;
@@ -276,13 +291,13 @@ html {
 
 }
 
-.Addpost .inputs .inp , .AddChat .inputs .inp {
+.Addpost .inputs .inp,
+.AddChat .inputs .inp {
   margin: 5px auto;
   padding: 10px;
   border-radius: 10px;
 }
 
-.NFP{
+.NFP {
   text-align: center;
 }
-
