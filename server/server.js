@@ -5,6 +5,8 @@ const http = require("http");
 const { Server } = require("socket.io");
 const app = express();
 const cors = require("cors");
+const multer = require("multer");
+const path = require("path");
 
 
 const server = http.createServer(app);
@@ -31,7 +33,19 @@ db.connect((err) => {
   }
 });
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 app.use(
   session({
     secret: "your-secret-key",
@@ -111,14 +125,19 @@ app.post("/api/getusername", (req, res) => {
   };
 });
 
-app.post("/api/addpost", (req, res) => {
+app.post("/api/addpost", upload.single('img'), (req, res) => {
+  console.log('File upload:', req.file);
+  console.log('Body:', req.body);
   const { title, text } = req.body;
+  const img = req.file ? req.file.filename : null;
+  console.log('Img filename:', img);
   db.query(
-    "INSERT INTO `posts`(`username`, `title`, `Text`) VALUES ( ? , ? , ?)",
-    [req.session.user, title, text],
+    "INSERT INTO `posts`(`username`, `title`, `Text`, `img`, `Likes`) VALUES ( ? , ? , ? , ?, 0)",
+    [req.session.user, title, text, img],
     (err, result) => {
       if (err) {
         console.error(err);
+        res.status(500).json({ succ: false });
       } else {
         if (result.affectedRows > 0) {
           res.json({ succ: true });
@@ -126,6 +145,69 @@ app.post("/api/addpost", (req, res) => {
           res.json({ succ: false });
         };
       };
+    }
+  );
+});
+
+app.post("/api/addlike", (req, res) => {
+  const { ID } = req.body;
+  const username = req.session.user;
+  // Check if user already liked this post
+  db.query(
+    "SELECT * FROM `likes` WHERE post_id = ? AND username = ?",
+    [ID, username],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ succ: false });
+      }
+      if (result.length > 0) {
+        // Already liked, so unlike: delete from likes and decrement Likes
+        db.query(
+          "DELETE FROM `likes` WHERE post_id = ? AND username = ?",
+          [ID, username],
+          (err, deleteResult) => {
+            if (err) {
+              console.error(err);
+              return res.status(500).json({ succ: false });
+            }
+            db.query(
+              "UPDATE `posts` SET `Likes` = `Likes` - 1 WHERE `ID` = ?",
+              [ID],
+              (err, updateResult) => {
+                if (err) {
+                  console.error(err);
+                  return res.status(500).json({ succ: false });
+                }
+                res.json({ succ: true, liked: false });
+              }
+            );
+          }
+        );
+      } else {
+        // Not liked, so like: insert into likes and increment Likes
+        db.query(
+          "INSERT INTO `likes` (post_id, username) VALUES (?, ?)",
+          [ID, username],
+          (err, insertResult) => {
+            if (err) {
+              console.error(err);
+              return res.status(500).json({ succ: false });
+            }
+            db.query(
+              "UPDATE `posts` SET `Likes` = `Likes` + 1 WHERE `ID` = ?",
+              [ID],
+              (err, updateResult) => {
+                if (err) {
+                  console.error(err);
+                  return res.status(500).json({ succ: false });
+                }
+                res.json({ succ: true, liked: true });
+              }
+            );
+          }
+        );
+      }
     }
   );
 });
@@ -142,7 +224,7 @@ io.on("connection", (socket) => {
           console.error(err);
         } else {
           if (result.length > 0) {
-            socket.emit("getPosts", result);
+            io.emit("getPosts", result);
           };
         };
       }

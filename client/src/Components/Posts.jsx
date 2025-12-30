@@ -1,16 +1,29 @@
-import React from 'react'
+import React , {useState , useRef} from 'react'
 import socket from '../JS/socket';
+import { AddLikeFetch } from '../JS/functions';
+import { useEffect } from 'react';
 
 
 export default function Posts() {
-    const [posts, setPosts] = React.useState([]);
+    const [posts, setPosts] = useState([]);
 
-    React.useEffect(() => {
+    function Loadposts() {
         socket.emit("loadPosts");
-        socket.on("getPosts", (result) => {
+    };
+
+    async function addLikeResult(ID) {
+        const result = await AddLikeFetch(ID);
+        if (result) {
+            Loadposts();
+        };
+    };
+
+    useEffect(() => {
+        socket.on("getPosts" , result => {
             setPosts(result);
         });
-    }, []);
+        Loadposts();
+    }, [])
 
     function Postsmap() {
         if (posts.length > 0) {
@@ -19,7 +32,17 @@ export default function Posts() {
                     <h2>{post.username}</h2>
                     <h4>{post.title}</h4>
                     <p>{post.Text}</p>
-                    <button> ❤️ {post.Likes}</button>
+                    {post.img && (
+                        post.img.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                            <img src={`/uploads/${post.img}`} alt="Post image" className="post-media" />
+                        ) : post.img.match(/\.(mp4|webm|ogg)$/i) ? (
+                            <video controls className="post-media">
+                                <source src={`/uploads/${post.img}`} type={`video/${post.img.split('.').pop()}`} />
+                                Your browser does not support the video tag.
+                            </video>
+                        ) : null
+                    )}
+                    <button onClick={() => addLikeResult(post.ID)}> ❤️ {post.Likes}</button>
                 </div>
             ));
         } else {

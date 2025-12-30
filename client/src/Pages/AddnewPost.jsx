@@ -11,6 +11,7 @@ export default function AddnewPost() {
 
     const TitleRef = useRef();
     const TextRef = useRef();
+    const ImgRef = useRef();
 
     useEffect(() => {
         async function Check() {
@@ -26,11 +27,12 @@ export default function AddnewPost() {
     async function AddPost() {
         const title = TitleRef.current.value;
         const text = TextRef.current.value;
+        const img = ImgRef.current.files[0];
         if (!title || !text) {
             setmsg(["red", "Please Enter data"]);
         } else {
             try {
-                const result = await Addpostfetch(text, title);
+                const result = await Addpostfetch(text, title, img);
                 if (result.succ) {
                     setmsg(["green", "post Added"]);
                 } else {
@@ -54,11 +56,12 @@ export default function AddnewPost() {
                 url4={["/logout", "Logout"]}
             />
             <div className="inputs">
-                <div style={{textAlign: 'center'}} className="head">
+                <div style={{ textAlign: 'center' }} className="head">
                     <h2 style={{ color: msg ? msg[0] : "black" }}>{msg ? msg[1] : <br />}</h2>
                 </div>
                 <input ref={TitleRef} placeholder='enter Post title' className='inp' type="text" />
                 <input ref={TextRef} placeholder='enter Post content' className='inp' type="text" />
+                <input ref={ImgRef} type="file" className='inp' accept="image/*,video/*" />
                 <button onClick={AddPost} className="btn">Post</button>
             </div>
         </div>
