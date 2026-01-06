@@ -18,6 +18,7 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.08);
   --nav-height: 70px;
+  --headerstyle: 38px;
 }
 
 body,
@@ -298,11 +299,13 @@ html {
 }
 
 
-.post>h2, h4 , p{
+.post>h2,
+h4,
+p {
   line-height: 30px;
 }
 
-.post>h2{
+.post>h2 {
   width: fit-content;
   border-radius: 30px;
   padding: 2px 6px;
@@ -310,11 +313,16 @@ html {
 }
 
 .post-media {
-  max-width: 100%;
+  max-width: 95%;
   height: auto;
   border-radius: 10px;
   margin: 10px 0;
   display: block;
+}
+
+.post-media.img {
+  min-width: 60%;
+  margin: auto;
 }
 
 .Addpost .inputs,
@@ -337,4 +345,103 @@ html {
 
 .NFP {
   text-align: center;
+}
+
+.helloworld {
+  display: inline-block;
+  font-size: var(--headerstyle);
+}
+
+.hellousername {
+  margin: 0 3px;
+  display: inline-block;
+  text-decoration: none;
+  color: #000;
+  font-size: var(--headerstyle);
+}
+
+/* ===============================
+   Profile Page (Clean Layout)
+================================ */
+
+.profile {
+  min-height: calc(100vh - var(--nav-height));
+  background: var(--bg-color);
+  display: flex;
+  justify-content: center;
+  padding: 30px 0;
+  overflow-y: auto;
+}
+
+.profilecontent {
+  width: 100%;
+  max-width: 900px;
+  background: var(--white);
+  border-radius: 24px;
+  box-shadow: var(--shadow-md);
+  padding: 30px;
+  margin-top: 25px;
+  max-height: calc(100vh - 150px);
+  /* حسب ارتفاع الهيدر والناف */
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* Header */
+.profilecontent .header {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  background: #f7f7fb;
+  padding: 25px;
+  border-radius: 20px;
+}
+
+/* Image */
+.profilecontent .header .img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--accent-color);
+  flex-shrink: 0;
+}
+
+.profilecontent .header .img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Info */
+.profilecontent .header .info h2 {
+  font-size: 26px;
+  margin-bottom: 8px;
+  color: var(--text-main);
+}
+
+
+
+.profilecontent .stats {
+  display: flex;
+  gap: 20px;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.profilecontent .stats b {
+  color: var(--text-main);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .profilecontent .header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profilecontent .stats {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 }

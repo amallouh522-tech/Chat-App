@@ -8,7 +8,6 @@ const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 
-
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -60,6 +59,26 @@ app.use(cors({
   credentials: true,
 }));
 
+function generateRID(callback) {
+  const RID = Math.floor(Math.random() * 90000) + 10000;
+
+  db.query(
+    "SELECT RID FROM users WHERE RID = ?",
+    [RID],
+    (err, result) => {
+      if (err) return callback(err);
+
+      if (result.length > 0) {
+        // موجود؟ جرّب واحد جديد
+        generateRID(callback);
+      } else {
+        // تمام، فاضي
+        callback(null, RID);
+      }
+    }
+  );
+}
+
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   db.query(
@@ -73,6 +92,7 @@ app.post("/api/login", (req, res) => {
         if (result.length > 0) {
           req.session.user = username;
           req.session.IsLoggedIn = true;
+          req.session.RID = result[0].RID;
           res.json({ succ: true, msg: "Login successful" });
         } else {
           res.json({ succ: false, msg: "Invalid credentials" });
@@ -84,16 +104,36 @@ app.post("/api/login", (req, res) => {
 
 app.post("/api/signup", (req, res) => {
   const { username, password, email } = req.body;
+
   db.query(
-    "INSERT INTO `users` (username , password , Email) VALUES ( ? , ? , ? )",
-    [username, password, email],
+    "SELECT * FROM users WHERE username = ? OR email = ?",
+    [username, email],
     (err, result) => {
       if (err) {
-        console.error("Error during signup query:", err);
-        res.status(500).json({ succ: false, msg: "Server error" });
-      } else {
-        res.json({ succ: true, msg: "Signup successful" });
-      };
+        return res.status(500).json({ succ: false, msg: "Server error" });
+      }
+
+      if (result.length > 0) {
+        return res.json({ succ: false, msg: "Username or email already exists" });
+      }
+
+      generateRID((err, RID) => {
+        if (err) {
+          return res.status(500).json({ succ: false, msg: "Server error" });
+        }
+
+        db.query(
+          "INSERT INTO users (username, password, email, RID) VALUES (?, ?, ?, ?)",
+          [username, password, email, RID],
+          (err) => {
+            if (err) {
+              return res.status(500).json({ succ: false, msg: "Server error" });
+            }
+
+            res.json({ succ: true, msg: "Signup successful", RID });
+          }
+        );
+      });
     }
   );
 });
@@ -126,20 +166,36 @@ app.post("/api/getusername", (req, res) => {
 });
 
 app.post("/api/addpost", upload.single('img'), (req, res) => {
-  console.log('File upload:', req.file);
-  console.log('Body:', req.body);
   const { title, text } = req.body;
   const img = req.file ? req.file.filename : null;
-  console.log('Img filename:', img);
   db.query(
-    "INSERT INTO `posts`(`username`, `title`, `Text`, `img`, `Likes`) VALUES ( ? , ? , ? , ?, 0)",
-    [req.session.user, title, text, img],
+    "INSERT INTO `posts`(`username`, `title`, `Text`, `RID` , `img`, `Likes` ) VALUES ( ? , ? , ? , ?, ? , 0)",
+    [req.session.user, title, text, req.session.RID, img],
     (err, result) => {
       if (err) {
         console.error(err);
         res.status(500).json({ succ: false });
       } else {
         if (result.affectedRows > 0) {
+          db.query(
+            "SELECT `Posts_num` FROM `users` WHERE `RID`=?",
+            [req.session.RID],
+            (err, result) => {
+              if (err) {
+                console.error(err);
+              }
+              if (result.length > 0) {
+                const num = result[0].Posts_num;
+                db.query(
+                  "UPDATE `users` SET `Posts_num`=? WHERE `RID`=?",
+                  [num + 1, req.session.RID],
+                  () => {
+
+                  }
+                )
+              }
+            }
+          )
           res.json({ succ: true });
         } else {
           res.json({ succ: false });
@@ -211,6 +267,59 @@ app.post("/api/addlike", (req, res) => {
     }
   );
 });
+
+app.post("/api/getprofile", (req, res) => {
+  const { ID } = req.body;
+  if (ID === null) {
+    db.query(
+      "SELECT * FROM `users` WHERE RID=?",
+      [req.session.RID],
+      (err, result) => {
+        if (err) {
+          console.error("Err In '/api/getprofile'" + err);
+        }
+        if (result.length > 0) {
+          res.json({ succ: true, result: result });
+        } else {
+          res.json({ succ: false })
+        }
+      }
+    );
+  } else {
+    db.query(
+      "SELECT * FROM `users` WHERE RID=?",
+      [ID],
+      (err, result) => {
+        if (err) {
+          console.error("Err In '/api/getprofile'" + err);
+        }
+        if (result.length > 0) {
+          res.json({ succ: true, result: result });
+        } else {
+          res.json({ succ: false })
+        }
+      }
+    );
+  };
+});
+
+app.post("/api/getprofileposts", (req, res) => {
+  const { ID } = req.body;
+  const RID = ID ?? req.session.RID;
+
+  db.query(
+    "SELECT * FROM `posts` WHERE RID=? ORDER BY ID DESC",
+    [RID],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ result: [] });
+      }
+      res.json({ result });
+    }
+  );
+});
+
 
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);

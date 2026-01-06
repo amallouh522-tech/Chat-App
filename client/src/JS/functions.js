@@ -1,8 +1,15 @@
 import axios from "axios";
+
 export async function AddLikeFetch(ID) {
-    const response = await axios.post("/api/addlike",
-        { ID },
-        { withCredentials: true }
+  try {
+    const res = await axios.post(
+      "/api/addlike",
+      { ID },
+      { withCredentials: true } // 🔥 هذا المهم
     );
-    return response.data.succ === true;
+    return res.data;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 }

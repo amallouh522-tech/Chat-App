@@ -7,6 +7,9 @@ import Chat from "./Pages/Chat"
 import AddnewPost from "./Pages/AddnewPost"
 import Logout from "./Pages/Logout"
 import AddChat from "./Pages/AddChat"
+import Profile from "./Pages/Profile"
+
+
 function App() {
   return (
     <BrowserRouter>
@@ -18,6 +21,7 @@ function App() {
         <Route path="/addpost" element={<AddnewPost/>} />
         <Route path="/logout" element={<Logout/>} />
         <Route path="/addchat" element={<AddChat/>} />
+        <Route path="/profile" element={<Profile/>} />
         <Route path="/*" element={<NFP/>} />
       </Routes>
     </BrowserRouter>

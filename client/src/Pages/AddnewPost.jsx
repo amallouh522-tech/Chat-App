@@ -53,7 +53,8 @@ export default function AddnewPost() {
                 url1={["/home", "Home"]}
                 url2={["/chat", "Chat"]}
                 url3={["/addchat", "Add new Chat"]}
-                url4={["/logout", "Logout"]}
+                url4={["/profile", "Profile"]}
+                url5={["/logout", "Logout"]}
             />
             <div className="inputs">
                 <div style={{ textAlign: 'center' }} className="head">

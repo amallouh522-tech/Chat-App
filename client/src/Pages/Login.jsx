@@ -46,12 +46,8 @@ export default function Login() {
             <div className="inputs">
                 
                 <h2 style={{color:"red"}}>{msg}<br /></h2>
-                <input onKeyUp={(e) => {
-                    if (e.key === "Enter") {
-                        passwordRef.current.focuse;
-                    }
-                }} ref={usernameRef} placeholder='Enter username' type="text" key={1} className="inp" />
-                <input onKeyUp={(e) => handleEnterKey(e, LoginResult)} ref={passwordRef} placeholder='Enter password' type="password" key={2} className="inp" />
+                <input ref={usernameRef} placeholder='Enter username' type="text" key={1} className="inp" />
+                <input id='password' onKeyUp={(e) => handleEnterKey(e, LoginResult)} ref={passwordRef} placeholder='Enter password' type="password" key={2} className="inp" />
                 <button className='btn' onClick={LoginResult}> Login </button>
                 <p> Don't have an account yet? <Link to={"/signup"}>Sign Up</Link></p>
             </div>
