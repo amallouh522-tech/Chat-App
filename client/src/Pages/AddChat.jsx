@@ -1,22 +1,44 @@
-import React, { useEffect } from 'react'
-import NavBar from '../Components/NavBar'
-import { useNavigate } from 'react-router-dom';
-import { MustLogin } from '../JS/mustLogin';
+import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function AddChat() {
+    const nameRef = useRef(null);
+    const userIdRef = useRef(null);
+    const nav = useNavigate();
 
-    const navigate = useNavigate();
+    async function addChat() {
+        const chatName = nameRef.current.value.trim();
+        const userId = userIdRef.current.value.trim();
 
-    useEffect(() => {
-        async function Check() {
-            const result = await MustLogin();
-            if (!result) {
-                navigate("/");
-            };
-        };
-        Check();
-    }, []);
+        if (!userId) {
+            alert("اكتب ID المستخدم، مش رقم خيالي");
+            return;
+        }
 
+        try {
+            const res = await axios.post(
+                "/api/chat/create",
+                {
+                    name: chatName,
+                    userId
+                },
+                {
+                    withCredentials: true
+                }
+            );
+
+            if (!res.data.success) {
+                alert(res.data.msg);
+                return;
+            }
+
+            nav(`/chat/${res.data.chatId}`);
+        } catch (err) {
+            console.error(err);
+            alert("صار خطأ، السيرفر مش بمزاجه");
+        }
+    }
 
     return (
         <div className='AddChat'>
@@ -28,11 +50,26 @@ export default function AddChat() {
                 url4={["/profile", "Profile"]}
                 url5={["/logout", "Logout"]}
             />
+
             <div className="inputs">
-                <input type="text" className="inp" placeholder="Chat Name" />
-                <input type="text" className="inp" placeholder="Add user ID" />
-                <button className="btn">Add Chat</button>
+                <input
+                    ref={nameRef}
+                    type="text"
+                    className="inp"
+                    placeholder="Chat Name"
+                />
+
+                <input
+                    ref={userIdRef}
+                    type="text"
+                    className="inp"
+                    placeholder="Add user ID"
+                />
+
+                <button onClick={addChat} className="btn">
+                    Add Chat
+                </button>
             </div>
         </div>
-    )
+    );
 }

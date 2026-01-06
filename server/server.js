@@ -320,6 +320,28 @@ app.post("/api/getprofileposts", (req, res) => {
   );
 });
 
+app.post("/api/chat/create", (req, res) => {
+  const myId = req.session.RID;
+  const { userId, name } = req.body;
+
+  if (!myId) return res.json({ success: false, msg: "Not logged in" });
+  if (myId == userId) return res.json({ success: false, msg: "تحب تحكي مع نفسك؟" });
+
+  const chatId = Math.floor(Math.random() * 90000) + 10000;
+
+  db.query(
+    "INSERT INTO chats (id, name) VALUES (?, ?)",
+    [chatId, name || null]
+  );
+
+  db.query(
+    "INSERT INTO chat_users (chat_id, user_id) VALUES (?, ?), (?, ?)",
+    [chatId, myId, chatId, userId]
+  );
+
+  res.json({ success: true, chatId });
+});
+
 
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
