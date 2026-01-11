@@ -59,6 +59,7 @@ app.use(cors({
   credentials: true,
 }));
 
+let RID;
 function generateRID(callback) {
   const RID = Math.floor(Math.random() * 90000) + 10000;
 
@@ -93,13 +94,12 @@ app.post("/api/login", (req, res) => {
           req.session.user = username;
           req.session.IsLoggedIn = true;
           req.session.RID = result[0].RID;
-          res.json({ succ: true, msg: "Login successful" });
+          res.json({ succ: true, msg: "Login successful", RID: req.session.RID });
         } else {
           res.json({ succ: false, msg: "Invalid credentials" });
-        };
-      };
-    }
-  );
+        }
+      }
+    });
 });
 
 app.post("/api/signup", (req, res) => {
@@ -123,7 +123,7 @@ app.post("/api/signup", (req, res) => {
         }
 
         db.query(
-          "INSERT INTO users (username, password, email, RID) VALUES (?, ?, ?, ?)",
+          "INSERT INTO users (username, password, email, RID , Posts_num , Followers , Following) VALUES (?, ?, ?, ? , 0 , 0 , 0)",
           [username, password, email, RID],
           (err) => {
             if (err) {
@@ -321,27 +321,80 @@ app.post("/api/getprofileposts", (req, res) => {
 });
 
 app.post("/api/chat/create", (req, res) => {
-  const myId = req.session.RID;
-  const { userId, name } = req.body;
-
-  if (!myId) return res.json({ success: false, msg: "Not logged in" });
-  if (myId == userId) return res.json({ success: false, msg: "تحب تحكي مع نفسك؟" });
-
-  const chatId = Math.floor(Math.random() * 90000) + 10000;
-
+  const { name, userId } = req.body;
   db.query(
-    "INSERT INTO chats (id, name) VALUES (?, ?)",
-    [chatId, name || null]
+    "SELECT * FROM `users` WHERE RID=?",
+    [userId],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+      }
+      if (result.length > 0) {
+        db.query(
+          "INSERT INTO `Chats`(`Chatname`, `ChatMan`, `Chatmember`) VALUES (? , ? , ?)",
+          [name, req.session.RID, userId],
+          (err, result) => {
+            if (err) {
+              console.error(err);
+            }
+            if (result.affectedRows > 0) {
+              db.query(
+                "SELECT `ChatID` FROM `Chats` WHERE `ChatMan`=? AND `Chatmember`=? AND `Chatname`=? ORDER BY `ChatID` DESC LIMIT 1",
+                [req.session.RID, userId, name],
+                (err, result) => {
+                  if (err) {
+                    console.error(err);
+                  };
+                  if (result.length > 0) {
+                    res.json({ success: true, chatId: result[0].ChatID });
+                  } else {
+                    res.json({ success: false, msg: "Failed to retrieve chat ID" });
+                  };
+                }
+              );
+            } else {
+              res.json({ success: false, msg: "Failed to create chat" });
+            };
+          }
+        );
+      } else {
+        res.json({ succ: false, msg: "userId was not used yet !" });
+      };
+    }
   );
-
-  db.query(
-    "INSERT INTO chat_users (chat_id, user_id) VALUES (?, ?), (?, ?)",
-    [chatId, myId, chatId, userId]
-  );
-
-  res.json({ success: true, chatId });
 });
 
+app.post("/api/fetchchats", (req, res) => {
+  db.query(
+    "SELECT * FROM `Chats` WHERE `ChatMan`=? OR `Chatmember`=?",
+    [req.session.RID, req.session.RID],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ result: [] });
+      }
+      res.json({ result });
+    }
+  );
+});
+
+app.post("/msg/send", (req, res) => {
+  const { massege, Chatid } = req.body;
+  db.query(
+    "INSERT INTO `msgs`(`sender`, `content` , `ChatID`) VALUES ( ? , ? , ?)",
+    [req.session.RID, massege, Chatid],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+      };
+      if (result.affectedRows > 0) {
+        res.json({ succ: true });
+      } else {
+        res.json({ succ: false });
+      }
+    }
+  );
+});
 
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
@@ -360,6 +413,23 @@ io.on("connection", (socket) => {
         };
       }
     );
+  });
+
+  socket.on("loadMasseges", (Chatid) => {
+    db.query(
+      "SELECT * FROM `msgs` WHERE ChatID=?",
+      [Chatid],
+      (err, result) => {
+        if (err) {
+          console.error(err);
+        }
+        if (result.length > 0) {
+          socket.emit("loadMassegesR", result)
+        } else {
+          socket.emit("loadMassegesR", null)
+        }
+      }
+    )
   });
 
   socket.on("disconnect", () => {

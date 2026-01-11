@@ -9,13 +9,15 @@ export default function Chat() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function Check() {
-      const result = await MustLogin();
-      if (!result) {
-        navigate("/");
-      };
+  async function Check() {
+    const result = await MustLogin();
+    if (!result) {
+      navigate("/");
     };
+  };
+
+
+  useEffect(() => {
     Check();
   }, []);
   return (

@@ -40,15 +40,16 @@ export default function Profile() {
         };
     };
 
+    async function Check() {
+        const result = await MustLogin();
+        if (!result) {
+            navigate("/");
+        };
+    };
+
     useEffect(() => {
         GetProfilePosts(profileId);
         GetProfile(profileId);
-        async function Check() {
-            const result = await MustLogin();
-            if (!result) {
-                navigate("/");
-            };
-        };
         Check();
     }, []);
 

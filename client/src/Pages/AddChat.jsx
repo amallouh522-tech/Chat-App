@@ -1,42 +1,55 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import NavBar from "../Components/NavBar";
+import { MustLogin } from "../JS/mustLogin";
 
 export default function AddChat() {
     const nameRef = useRef(null);
     const userIdRef = useRef(null);
     const nav = useNavigate();
+    const [msg, setmsg] = useState(null);
+    useEffect(() => {
+        async function Check() {
+            const result = await MustLogin();
+            if (!result) {
+                nav("/");
+            };
+        };
+        Check();
+    })
 
     async function addChat() {
         const chatName = nameRef.current.value.trim();
         const userId = userIdRef.current.value.trim();
 
         if (!userId) {
-            alert("اكتب ID المستخدم، مش رقم خيالي");
+            setmsg(["Enter userID", "red"]);
+            return;
+        }
+
+        if (!chatName) {
+            setmsg(["Enter Chat name Please", "red"]);
             return;
         }
 
         try {
             const res = await axios.post(
                 "/api/chat/create",
-                {
-                    name: chatName,
-                    userId
-                },
-                {
-                    withCredentials: true
-                }
+                { name: chatName, userId },
+                { withCredentials: true }
             );
 
             if (!res.data.success) {
-                alert(res.data.msg);
+                setmsg([res.data.msg, "red"]);
                 return;
+            } else {
+                setmsg(["Add chat Successed", 'green']);
+                nav(`/chat?chatid=${res.data.chatId}`);
             }
-
-            nav(`/chat/${res.data.chatId}`);
         } catch (err) {
             console.error(err);
-            alert("صار خطأ، السيرفر مش بمزاجه");
+            setmsg(["server error Please try again", "red"]);
         }
     }
 
@@ -52,6 +65,7 @@ export default function AddChat() {
             />
 
             <div className="inputs">
+                <h2 style={{color : msg ? msg[1] : "black" , textAlign:"center"}}>{msg ? msg[0] : <br />}</h2>
                 <input
                     ref={nameRef}
                     type="text"

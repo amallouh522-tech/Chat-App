@@ -11,7 +11,7 @@ export async function LoginFetch(username , password) {
 
             const Result = Response.data;
             if (Result.succ) {
-                return {succ : true};
+                return {succ : true, RID: Result.RID, msg: Result.msg};
             }else{
                 return {succ : false , msg : Result.msg || "Error while logging in"}
             }

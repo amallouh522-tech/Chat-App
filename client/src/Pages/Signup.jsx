@@ -33,12 +33,12 @@ export default function Signup() {
         <h2 style={{ color: msg ? msg[0] : "black" }}>{msg ? msg[1] : <br />}</h2>
         <input onKeyUp={(e) => {
           if (e.key === "Enter") {
-            usernameRef.current.focuse;
+            usernameRef.current.focus();
           }
         }} ref={usernameRef} placeholder='Enter username' type="text" key={1} className="inp" />
         <input onKeyUp={(e) => {
           if (e.key === "Enter") {
-            passwordRef.current.focuse;
+            passwordRef.current.focus();
           }
         }} ref={EmailRef} placeholder='Enter Email' type="text" key={2} className="inp" />
         <input onKeyUp={(e) => handleEnterKey(e, SignUpResult)} ref={passwordRef} placeholder='Enter password' type="password" key={3} className="inp" />
