@@ -3,12 +3,13 @@ import socket from '../JS/socket';
 import { AddLikeFetch } from '../JS/functions';
 import { useEffect } from 'react';
 import { Link } from "react-router-dom";
+import { useServerContext } from '../Hooks/ServerContext';
 
 export default function Posts() {
     const [posts, setPosts] = useState([]);
-
+    const {Server} = useServerContext();
     function Loadposts() {
-        socket.emit("loadPosts");
+        socket.emit("loadPosts" , Server.ServerName);
     };
 
     async function addLikeResult(ID) {
@@ -17,7 +18,15 @@ export default function Posts() {
             Loadposts();
         };
     };
-
+    useEffect(() => {
+        socket.on("getPosts", result => {
+            setPosts(result);
+        });
+        Loadposts();
+        return () => {
+            socket.off("getPosts"); // 🧹 cleanup
+        };
+    }, [Server.ServerName])
     useEffect(() => {
         socket.on("getPosts", result => {
             setPosts(result);

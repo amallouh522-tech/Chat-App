@@ -34,7 +34,6 @@ export default function Login() {
         const password = passwordRef.current.value;
         const Lresult = await LoginFetch(username, password);
         if (Lresult.succ) {
-            console.log("LOGIN RESULT:", Lresult);
             setUser({
                 username: username,
                 RID: Lresult.RID,

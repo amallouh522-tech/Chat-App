@@ -61,11 +61,12 @@ export default function AddChat() {
                 url2={["/chat", "Chat"]}
                 url3={["/home", "Home"]}
                 url4={["/profile", "Profile"]}
-                url5={["/logout", "Logout"]}
+                url5={["/server/add", "Add Server"]}
+                url6={["/logout", "Logout"]}
             />
 
             <div className="inputs">
-                <h2 style={{color : msg ? msg[1] : "black" , textAlign:"center"}}>{msg ? msg[0] : <br />}</h2>
+                <h2 style={{ color: msg ? msg[1] : "black", textAlign: "center" }}>{msg ? msg[0] : <br />}</h2>
                 <input
                     ref={nameRef}
                     type="text"

@@ -11,6 +11,7 @@ export default function NFP() {
         url3={["/home" , "Home"]}
         url4={["/addpost", "add new post"]}
         url5={["/addchat" , "add chat"]}
+        url6={["/server/add" , "Add Server"]}
       />
         <h2>Error num : 404</h2>
         <h3>This page wasnt Fount</h3>

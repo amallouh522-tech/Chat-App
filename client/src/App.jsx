@@ -8,6 +8,7 @@ import AddnewPost from "./Pages/AddnewPost"
 import Logout from "./Pages/Logout"
 import AddChat from "./Pages/AddChat"
 import Profile from "./Pages/Profile"
+import AddServer from "./Pages/AddServer"
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/addchat" element={<AddChat />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/server/add" element={<AddServer />}/>
         <Route path="*" element={<NFP />} />
       </Routes>
     </BrowserRouter>

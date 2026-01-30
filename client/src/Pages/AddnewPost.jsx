@@ -3,10 +3,11 @@ import NavBar from '../Components/NavBar'
 import { useNavigate } from 'react-router-dom';
 import { MustLogin } from '../JS/mustLogin';
 import { Addpostfetch } from '../JS/Addnewpost';
+import { useServerContext } from "../Hooks/ServerContext";
 
 export default function AddnewPost() {
     const navigate = useNavigate();
-
+    const { Server } = useServerContext();
     const [msg, setmsg] = useState([]);
 
     const TitleRef = useRef();
@@ -32,7 +33,7 @@ export default function AddnewPost() {
             setmsg(["red", "Please Enter data"]);
         } else {
             try {
-                const result = await Addpostfetch(text, title, img);
+                const result = await Addpostfetch(text, title, img, Server);
                 if (result.succ) {
                     setmsg(["green", "post Added"]);
                 } else {
@@ -54,7 +55,8 @@ export default function AddnewPost() {
                 url2={["/chat", "Chat"]}
                 url3={["/addchat", "Add new Chat"]}
                 url4={["/profile", "Profile"]}
-                url5={["/logout", "Logout"]}
+                url5={["/server/add", "Add Server"]}
+                url6={["/logout", "Logout"]}
             />
             <div className="inputs">
                 <div style={{ textAlign: 'center' }} className="head">

@@ -83,6 +83,40 @@ html {
   color: var(--accent-color);
 }
 
+.Join{
+  display: flex;
+  align-items: center;
+}
+
+.Join_inp{
+  padding: 6px ;
+  font-size: 15px;
+  width: 100%;
+  border-radius: 5px;
+  border: 1.5px solid #eee;
+  background: #fafafa;
+  outline: none;
+  transition: 0.3s;
+}
+
+.Join_inp:focus {
+  border-color: var(--accent-color);
+  background: var(--white);
+  box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.05);
+}
+
+.Join_btn{
+  padding: 4px;
+  margin: 0 3px;
+  font-weight: 600;
+  border: none;
+  border-radius: 3px;
+  background: var(--primary-gradient);
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
 /* --- 3. تصميم الـ Login المعاصر --- */
 .Login {
   display: flex;

@@ -166,11 +166,12 @@ app.post("/api/getusername", (req, res) => {
 });
 
 app.post("/api/addpost", upload.single('img'), (req, res) => {
-  const { title, text } = req.body;
+  const { title, text, Server } = req.body;
+  const serverName = Server?.trim() || "Global";
   const img = req.file ? req.file.filename : null;
   db.query(
-    "INSERT INTO `posts`(`username`, `title`, `Text`, `RID` , `img`, `Likes` ) VALUES ( ? , ? , ? , ?, ? , 0)",
-    [req.session.user, title, text, req.session.RID, img],
+    "INSERT INTO `posts`(`username`, `title`, `Text`, `RID` , `img`,`Server` , `Likes` ) VALUES ( ? , ? , ? , ?, ? , ? , 0)",
+    [req.session.user, title, text, req.session.RID, img, serverName],
     (err, result) => {
       if (err) {
         console.error(err);
@@ -399,16 +400,16 @@ app.post("/msg/send", (req, res) => {
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
-  socket.on("loadPosts", () => {
+  socket.on("loadPosts", (Server) => {
     db.query(
-      "SELECT * FROM `posts` ORDER BY ID DESC",
-      [],
+      "SELECT * FROM `posts` WHERE Server=? ORDER BY ID DESC",
+      [Server.ServerName],
       (err, result) => {
         if (err) {
           console.error(err);
         } else {
           if (result.length > 0) {
-            io.emit("getPosts", result);
+            socket.emit("getPosts", result);
           };
         };
       }

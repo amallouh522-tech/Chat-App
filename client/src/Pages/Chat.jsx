@@ -28,7 +28,8 @@ export default function Chat() {
         url2={["/addpost", "Add new post"]}
         url3={["/addchat", "Add new chat"]}
         url4={["/profile", "Profile"]}
-        url5={["/logout", "Logout"]}
+        url5={["/server/add" , "Add Server"]}
+        url6={["/logout" , "Logout"]}
       />
       <div className="content">
         <OpenedChats />
